@@ -80,7 +80,7 @@ contract Snowflake is Ownable {
             recoveryAddress, associatedAddress, _providers, new address[](0), v, r, s, timestamp
         );
 
-        _addResolver(_ein, clientRaindropAddress, true, 0, abi.encode(associatedAddress, casedHydroId));
+        addResolver(_ein, clientRaindropAddress, true, 0, abi.encode(associatedAddress, casedHydroId));
 
         return _ein;
     }
@@ -150,17 +150,7 @@ contract Snowflake is Ownable {
 
     // permission adding a resolver for identity of msg.sender
     function addResolver(address resolver, bool isSnowflake, uint withdrawAllowance, bytes memory extraData) public {
-        _addResolver(identityRegistry.getEIN(msg.sender), resolver, isSnowflake, withdrawAllowance, extraData);
-    }
-
-    // permission adding a resolver for identity passed by a provider
-    function addResolverAsProvider(
-        uint ein, address resolver, bool isSnowflake, uint withdrawAllowance, bytes memory extraData
-    )
-        public
-    {
-        require(identityRegistry.isProviderFor(ein, msg.sender), "The msg.sender is not a Provider for the passed EIN");
-        _addResolver(ein, resolver, isSnowflake, withdrawAllowance, extraData);
+        addResolver(identityRegistry.getEIN(msg.sender), resolver, isSnowflake, withdrawAllowance, extraData);
     }
 
     // permission addResolversFor by signature
@@ -176,7 +166,7 @@ contract Snowflake is Ownable {
             approvingAddress, ein, resolver, isSnowflake, withdrawAllowance, extraData, v, r, s, timestamp
         );
 
-        _addResolver(ein, resolver, isSnowflake, withdrawAllowance, extraData);
+        addResolver(ein, resolver, isSnowflake, withdrawAllowance, extraData);
     }
 
     function validateAddResolverForSignature(
@@ -203,7 +193,7 @@ contract Snowflake is Ownable {
     }
 
     // common logic for adding resolvers
-    function _addResolver(uint ein, address resolver, bool isSnowflake, uint withdrawAllowance, bytes memory extraData)
+    function addResolver(uint ein, address resolver, bool isSnowflake, uint withdrawAllowance, bytes memory extraData)
         private
     {
         require(!identityRegistry.isResolverFor(ein, resolver), "Identity has already set this resolver.");
